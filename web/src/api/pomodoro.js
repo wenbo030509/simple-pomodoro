@@ -1,165 +1,85 @@
-// Frontend assumes these endpoints exist:
-// GET /api/pomodoro
-// POST /api/pomodoro/start | /pause | /reset | /skip
-// PUT /api/pomodoro/config
-const DEFAULT_STATE = {
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
+const createApiClient = (baseURL) => {
+  const client = {
+    async request(url, options = {}) {
+      const response = await fetch(`${baseURL}${url}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+        ...options,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: '未知错误' }));
+        const errorMessage = errorData.message || `请求失败 (${response.status})`;
+        throw new Error(errorMessage);
+      }
+
+      return response.json();
+    },
+
+    get(url) {
+      return this.request(url, { method: 'GET' });
+    },
+
+    post(url, body) {
+      return this.request(url, { method: 'POST', body: JSON.stringify(body) });
+    },
+
+    put(url, body) {
+      return this.request(url, { method: 'PUT', body: JSON.stringify(body) });
+    },
+  };
+
+  return client;
+};
+
+const apiClient = createApiClient(API_BASE_URL);
+
+export const pomodoroBasePath = API_BASE_URL;
+
+export const DEFAULT_STATE = {
+  phase: 'focus',
   mode: 'focus',
+  modeLabel: '专注',
+  status: 'idle',
   isRunning: false,
   remainingSeconds: 25 * 60,
   focusMinutes: 25,
   breakMinutes: 5,
+  focusDurationSeconds: 25 * 60,
+  breakDurationSeconds: 5 * 60,
   completedFocusSessions: 0,
+  totalPhaseSeconds: 25 * 60,
+  progress: 0,
 };
 
-const rawBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
-const baseUrl = rawBaseUrl ? rawBaseUrl.replace(/\/$/, '') : '';
-const pomodoroBasePath = `${baseUrl}/api`;
-
-function toNumber(value, fallback) {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
-
-function normalizeSource(payload) {
-  if (payload && typeof payload === 'object') {
-    if (payload.data && typeof payload.data === 'object') {
-      return payload.data;
-    }
-
-    if (payload.state && typeof payload.state === 'object') {
-      return payload.state;
-    }
-  }
-
-  return payload ?? {};
-}
-
-export function normalizePomodoroState(payload) {
-  const source = normalizeSource(payload);
-  const settings = source.settings && typeof source.settings === 'object' ? source.settings : {};
-
-  const mode = source.mode ?? source.phase ?? DEFAULT_STATE.mode;
-  const focusMinutes = toNumber(
-    source.focusMinutes ?? source.focusDurationMinutes ?? settings.focusMinutes,
-    DEFAULT_STATE.focusMinutes,
-  );
-  const breakMinutes = toNumber(
-    source.breakMinutes ?? source.breakDurationMinutes ?? settings.breakMinutes,
-    DEFAULT_STATE.breakMinutes,
-  );
-  const remainingSeconds = Math.max(
-    0,
-    Math.floor(
-      toNumber(
-        source.remainingSeconds ??
-          source.remainingTimeSeconds ??
-          source.secondsLeft ??
-          source.remaining ??
-          source.timeLeft,
-        mode === 'break' ? breakMinutes * 60 : focusMinutes * 60,
-      ),
-    ),
-  );
-
-  return {
-    mode: mode === 'break' ? 'break' : 'focus',
-    status: source.status ?? (source.isRunning ? 'running' : 'idle'),
-    isRunning: Boolean(source.isRunning ?? source.running ?? source.active),
-    remainingSeconds,
-    focusMinutes,
-    breakMinutes,
-    completedFocusSessions: Math.max(
-      0,
-      Math.floor(
-        toNumber(
-          source.completedFocusSessions ??
-            source.completedPomodoros ??
-            source.completedCount ??
-            source.focusSessionsCompleted,
-          DEFAULT_STATE.completedFocusSessions,
-        ),
-      ),
-    ),
-  };
-}
-
-async function request(path = '', options = {}) {
-  const response = await fetch(`${pomodoroBasePath}${path}`, {
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  });
-
-  if (!response.ok) {
-    let message = `请求失败（${response.status}）`;
-
-    try {
-      const errorPayload = await response.json();
-      if (errorPayload?.message) {
-        message = errorPayload.message;
-      }
-    } catch {
-      // Ignore invalid JSON errors and keep the generic message.
-    }
-
-    throw new Error(message);
-  }
-
-  if (response.status === 204) {
-    return null;
-  }
-
-  const text = await response.text();
-  if (!text) {
-    return null;
-  }
-
-  return JSON.parse(text);
-}
-
 export async function fetchPomodoroState() {
-  const payload = await request('/pomodoro');
-  return normalizePomodoroState(payload);
+  return apiClient.get('/pomodoro');
 }
 
 export async function startPomodoro() {
-  const payload = await request('/pomodoro/start', { method: 'POST' });
-  return payload ? normalizePomodoroState(payload) : null;
+  return apiClient.post('/pomodoro/start');
 }
 
 export async function pausePomodoro() {
-  const payload = await request('/pomodoro/pause', { method: 'POST' });
-  return payload ? normalizePomodoroState(payload) : null;
+  return apiClient.post('/pomodoro/pause');
 }
 
 export async function resumePomodoro() {
-  const payload = await request('/pomodoro/resume', { method: 'POST' });
-  return payload ? normalizePomodoroState(payload) : null;
+  return apiClient.post('/pomodoro/resume');
 }
 
 export async function resetPomodoro() {
-  const payload = await request('/pomodoro/reset', { method: 'POST' });
-  return payload ? normalizePomodoroState(payload) : null;
+  return apiClient.post('/pomodoro/reset');
 }
 
 export async function skipPomodoro() {
-  const payload = await request('/pomodoro/skip', { method: 'POST' });
-  return payload ? normalizePomodoroState(payload) : null;
+  return apiClient.post('/pomodoro/skip');
 }
 
-export async function updatePomodoroConfig({ focusMinutes, breakMinutes }) {
-  const payload = await request('/pomodoro/durations', {
-    method: 'PUT',
-    body: JSON.stringify({
-      focusMinutes,
-      breakMinutes,
-    }),
-  });
-
-  return payload ? normalizePomodoroState(payload) : null;
+export async function updatePomodoroConfig(config) {
+  return apiClient.put('/pomodoro/durations', config);
 }
-
-export { DEFAULT_STATE, pomodoroBasePath };
