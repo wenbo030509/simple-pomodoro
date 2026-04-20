@@ -24,26 +24,28 @@
   --focus: #ffc165;
   --break: #62c6a5;
   --shadow: 0 28px 80px rgba(0, 0, 0, 0.32);
+  --input-bg: rgba(10, 10, 10, 0.24);
 }
 
 :root.light {
   color: #1a1210;
   background:
-    radial-gradient(circle at top left, rgba(255, 128, 82, 0.18), transparent 32%),
-    radial-gradient(circle at bottom right, rgba(229, 92, 66, 0.14), transparent 36%),
-    linear-gradient(145deg, #fffcf8 0%, #fff8f4 52%, #fff0e8 100%);
+    radial-gradient(circle at top left, rgba(255, 128, 82, 0.15), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(229, 92, 66, 0.12), transparent 36%),
+    linear-gradient(145deg, #fefcf9 0%, #faf5f0 52%, #f5ebe4 100%);
   color-scheme: light;
-  --surface: rgba(255, 252, 248, 0.84);
-  --surface-strong: rgba(255, 255, 255, 0.92);
-  --border: rgba(230, 120, 85, 0.18);
+  --surface: rgba(255, 255, 255, 0.95);
+  --surface-strong: rgba(255, 255, 255, 0.98);
+  --border: rgba(230, 120, 85, 0.32);
   --text-main: #1a1210;
-  --text-soft: rgba(58, 38, 32, 0.72);
+  --text-soft: rgba(58, 38, 32, 0.65);
   --accent: #e65c38;
   --accent-strong: #c94424;
-  --accent-soft: rgba(230, 92, 56, 0.12);
+  --accent-soft: rgba(230, 92, 56, 0.15);
   --focus: #d99528;
   --break: #46a687;
-  --shadow: 0 28px 80px rgba(0, 0, 0, 0.12);
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  --input-bg: rgba(248, 244, 240, 0.8);
 }
 
 * {
@@ -210,10 +212,26 @@ input {
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.primary-button:hover,
+:root.light .secondary-button,
+:root.light .save-button {
+  background: rgba(230, 92, 56, 0.08);
+  border-color: rgba(230, 120, 85, 0.2);
+}
+
+.primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(230, 92, 56, 0.35);
+}
+
 .secondary-button:hover,
 .save-button:hover {
   transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+:root.light .secondary-button:hover,
+:root.light .save-button:hover {
+  background: rgba(230, 92, 56, 0.12);
 }
 
 .primary-button:disabled,
@@ -306,8 +324,8 @@ input {
   width: 100%;
   padding: 15px 16px;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(10, 10, 10, 0.24);
+  border: 1px solid var(--border);
+  background: var(--input-bg);
   color: var(--text-main);
   outline: none;
 }
