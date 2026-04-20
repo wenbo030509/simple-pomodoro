@@ -1,15 +1,18 @@
 :root {
   font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root, :root.dark {
   color: #fff8ef;
   background:
     radial-gradient(circle at top left, rgba(255, 194, 122, 0.26), transparent 32%),
     radial-gradient(circle at bottom right, rgba(229, 92, 66, 0.22), transparent 36%),
     linear-gradient(145deg, #231816 0%, #17110f 52%, #0f0a09 100%);
   color-scheme: dark;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   --surface: rgba(34, 23, 20, 0.84);
   --surface-strong: rgba(53, 35, 29, 0.92);
   --border: rgba(255, 214, 181, 0.14);
@@ -21,6 +24,26 @@
   --focus: #ffc165;
   --break: #62c6a5;
   --shadow: 0 28px 80px rgba(0, 0, 0, 0.32);
+}
+
+:root.light {
+  color: #1a1210;
+  background:
+    radial-gradient(circle at top left, rgba(255, 128, 82, 0.18), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(229, 92, 66, 0.14), transparent 36%),
+    linear-gradient(145deg, #fffcf8 0%, #fff8f4 52%, #fff0e8 100%);
+  color-scheme: light;
+  --surface: rgba(255, 252, 248, 0.84);
+  --surface-strong: rgba(255, 255, 255, 0.92);
+  --border: rgba(230, 120, 85, 0.18);
+  --text-main: #1a1210;
+  --text-soft: rgba(58, 38, 32, 0.72);
+  --accent: #e65c38;
+  --accent-strong: #c94424;
+  --accent-soft: rgba(230, 92, 56, 0.12);
+  --focus: #d99528;
+  --break: #46a687;
+  --shadow: 0 28px 80px rgba(0, 0, 0, 0.12);
 }
 
 * {
@@ -296,6 +319,37 @@ input {
 
 .save-button {
   margin-top: auto;
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
+  box-shadow: var(--shadow);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.08);
+}
+
+.theme-toggle svg {
+  width: 22px;
+  height: 22px;
 }
 
 @media (max-width: 900px) {
