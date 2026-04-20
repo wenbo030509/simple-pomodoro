@@ -257,6 +257,11 @@ input {
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+:root.light .stat-card {
+  background: rgba(230, 92, 56, 0.06);
+  border-color: rgba(230, 120, 85, 0.15);
+}
+
 .stat-card dt {
   color: var(--text-soft);
   font-size: 0.92rem;
@@ -275,6 +280,11 @@ input {
   color: var(--text-soft);
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+:root.light .message {
+  background: rgba(230, 92, 56, 0.06);
+  border-color: rgba(230, 120, 85, 0.15);
 }
 
 .message.error {
