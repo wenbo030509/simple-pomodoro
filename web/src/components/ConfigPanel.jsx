@@ -1,5 +1,3 @@
-import { pomodoroBasePath } from '../api/pomodoro.js';
-
 export function ConfigPanel({
   isBootstrapping,
   isSavingConfig,
@@ -15,7 +13,6 @@ export function ConfigPanel({
           <h2>时间设置</h2>
           <p>可编辑专注和休息分钟数，并同步到后端。</p>
         </div>
-        <span className="api-pill">{pomodoroBasePath}</span>
       </div>
 
       <div className="config-grid">
