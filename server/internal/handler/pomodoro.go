@@ -11,42 +11,46 @@ import (
 )
 
 type PomodoroHandler struct {
-	timerService *service.TimerService
+	timer service.Timer
 }
 
-func NewPomodoroHandler() *PomodoroHandler {
+func NewPomodoroHandler(timer service.Timer) *PomodoroHandler {
 	return &PomodoroHandler{
-		timerService: service.NewTimerService(),
+		timer: timer,
 	}
 }
 
+func NewDefaultPomodoroHandler() *PomodoroHandler {
+	return NewPomodoroHandler(service.NewTimerService())
+}
+
 func (h *PomodoroHandler) GetState(c *gin.Context) {
-	snapshot := h.timerService.GetSnapshot()
+	snapshot := h.timer.GetSnapshot()
 	c.JSON(http.StatusOK, snapshot)
 }
 
 func (h *PomodoroHandler) Start(c *gin.Context) {
-	snapshot := h.timerService.Start()
+	snapshot := h.timer.Start()
 	c.JSON(http.StatusOK, snapshot)
 }
 
 func (h *PomodoroHandler) Pause(c *gin.Context) {
-	snapshot := h.timerService.Pause()
+	snapshot := h.timer.Pause()
 	c.JSON(http.StatusOK, snapshot)
 }
 
 func (h *PomodoroHandler) Resume(c *gin.Context) {
-	snapshot := h.timerService.Resume()
+	snapshot := h.timer.Resume()
 	c.JSON(http.StatusOK, snapshot)
 }
 
 func (h *PomodoroHandler) Reset(c *gin.Context) {
-	snapshot := h.timerService.Reset()
+	snapshot := h.timer.Reset()
 	c.JSON(http.StatusOK, snapshot)
 }
 
 func (h *PomodoroHandler) Skip(c *gin.Context) {
-	snapshot := h.timerService.Skip()
+	snapshot := h.timer.Skip()
 	c.JSON(http.StatusOK, snapshot)
 }
 
@@ -62,7 +66,7 @@ func (h *PomodoroHandler) UpdateSettings(c *gin.Context) {
 		return
 	}
 
-	snapshot, err := h.timerService.UpdateSettings(payload.FocusMinutes, payload.BreakMinutes)
+	snapshot, err := h.timer.UpdateSettings(payload.FocusMinutes, payload.BreakMinutes)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{Error: err.Error()})
 		return

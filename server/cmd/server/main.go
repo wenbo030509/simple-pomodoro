@@ -23,7 +23,7 @@ func main() {
 	router.Use(middleware.CORS())
 	router.Use(middleware.Logging())
 
-	pomodoroHandler := handler.NewPomodoroHandler()
+	pomodoroHandler := handler.NewDefaultPomodoroHandler()
 
 	router.GET("/health", handler.HandleHealth)
 
