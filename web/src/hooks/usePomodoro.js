@@ -8,7 +8,7 @@ import {
   skipPomodoro,
   startPomodoro,
   updatePomodoroConfig,
-} from './api/pomodoro.js';
+} from '../api/pomodoro.js';
 
 const initialState = {
   pomodoro: DEFAULT_STATE,
