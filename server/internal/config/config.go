@@ -6,10 +6,17 @@ import (
 
 type Config struct {
 	Server ServerConfig `mapstructure:"server"`
+	Log    LogConfig    `mapstructure:"log"`
 }
 
 type ServerConfig struct {
-	Port string `mapstructure:"port"`
+	Port         string `mapstructure:"port"`
+	ReadTimeout  int    `mapstructure:"readTimeout"`
+	WriteTimeout int    `mapstructure:"writeTimeout"`
+}
+
+type LogConfig struct {
+	Level string `mapstructure:"level"`
 }
 
 func Load() (*Config, error) {
@@ -19,12 +26,24 @@ func Load() (*Config, error) {
 	viper.AddConfigPath("./config")
 
 	viper.SetDefault("server.port", "8080")
+	viper.SetDefault("server.readTimeout", 5)
+	viper.SetDefault("server.writeTimeout", 5)
+	viper.SetDefault("log.level", "info")
+
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix("POMODORO")
+	viper.BindEnv("server.port", "PORT")
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			return &Config{
 				Server: ServerConfig{
-					Port: "8080",
+					Port:         "8080",
+					ReadTimeout:  5,
+					WriteTimeout: 5,
+				},
+				Log: LogConfig{
+					Level: "info",
 				},
 			}, nil
 		}

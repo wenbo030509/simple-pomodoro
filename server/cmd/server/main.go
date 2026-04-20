@@ -64,11 +64,11 @@ func main() {
 	srv := &http.Server{
 		Addr:         addr,
 		Handler:      router,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 5 * time.Second,
+		ReadTimeout:  time.Duration(cfg.Server.ReadTimeout) * time.Second,
+		WriteTimeout: time.Duration(cfg.Server.WriteTimeout) * time.Second,
 	}
 
-	log.Printf("Pomodoro server listening on http://localhost%s", addr)
+	log.Printf("Pomodoro server listening on http://localhost%s with timeout: %ds read, %ds write", addr, cfg.Server.ReadTimeout, cfg.Server.WriteTimeout)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal(err)
 	}

@@ -1,2 +1,6 @@
 server:
   port: "8080"
+  readTimeout: 5
+  writeTimeout: 5
+log:
+  level: "info"
